@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Media, MasonryGrid } from "@once-ui-system/core";
-import { gallery } from "@/resources";
+import { Media, MasonryGrid } from '@once-ui-system/core';
+import { gallery } from '@/resources';
 
 export default function GalleryView() {
   return (
@@ -10,10 +10,11 @@ export default function GalleryView() {
         <Media
           enlarge
           priority={index < 10}
-          sizes="(max-width: 560px) 100vw, 50vw"
+          sizes='(max-width: 560px) 100vw, 50vw'
+          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
           key={index}
-          radius="m"
-          aspectRatio={image.orientation === "horizontal" ? "16 / 9" : "3 / 4"}
+          radius='m'
+          aspectRatio={image.orientation === 'horizontal' ? '16 / 9' : '3 / 4'}
           src={image.src}
           alt={image.alt}
         />

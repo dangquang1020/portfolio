@@ -1,49 +1,110 @@
-"use client";
+'use client';
 
-import { mailchimp, newsletter } from "@/resources";
-import { Button, Heading, Input, Text, Background, Column, Row } from "@once-ui-system/core";
-import { opacity, SpacingToken } from "@once-ui-system/core";
-import { useState } from "react";
+import { mailchimp, newsletter } from '@/resources';
+import {
+  Button,
+  Heading,
+  Input,
+  Text,
+  Background,
+  Column,
+  Textarea,
+} from '@once-ui-system/core';
+import type { opacity, SpacingToken } from '@once-ui-system/core';
+import { useState } from 'react';
 
-function debounce<T extends (...args: any[]) => void>(func: T, delay: number): T {
-  let timeout: ReturnType<typeof setTimeout>;
-  return ((...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), delay);
-  }) as T;
-}
+type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
-export const Mailchimp: React.FC<React.ComponentProps<typeof Column>> = ({ ...flex }) => {
-  const [email, setEmail] = useState<string>("");
-  const [error, setError] = useState<string>("");
-  const [touched, setTouched] = useState<boolean>(false);
+export const ContactForm: React.FC<React.ComponentProps<typeof Column>> = ({
+  ...flex
+}) => {
+  const [email, setEmail] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
+  const [emailError, setEmailError] = useState<string>('');
+  const [messageError, setMessageError] = useState<string>('');
+  const [status, setStatus] = useState<FormStatus>('idle');
+  const [responseMessage, setResponseMessage] = useState<string>('');
 
-  const validateEmail = (email: string): boolean => {
-    if (email === "") {
+  const validateEmail = (emailValue: string): boolean => {
+    if (emailValue === '') {
       return true;
     }
-
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
+    return emailPattern.test(emailValue);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
 
     if (!validateEmail(value)) {
-      setError("Please enter a valid email address.");
+      setEmailError('Please enter a valid email address.');
     } else {
-      setError("");
+      setEmailError('');
     }
   };
 
-  const debouncedHandleChange = debounce(handleChange, 2000);
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setMessage(value);
 
-  const handleBlur = () => {
-    setTouched(true);
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
+    if (value.trim() === '') {
+      setMessageError('Please enter a message.');
+    } else {
+      setMessageError('');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Validate before submission
+    let hasError = false;
+
+    if (!email || !validateEmail(email)) {
+      setEmailError('Please enter a valid email address.');
+      hasError = true;
+    }
+
+    if (!message.trim()) {
+      setMessageError('Please enter a message.');
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    setStatus('submitting');
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: mailchimp.action,
+          from_name: 'Portfolio Contact Form',
+          replyto: email,
+          email: email,
+          message: message,
+          subject: `New Contact Form Message from ${email}`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setStatus('success');
+        setResponseMessage('Thank you! Your message has been sent.');
+        setEmail('');
+        setMessage('');
+      } else {
+        setStatus('error');
+        setResponseMessage('Something went wrong. Please try again.');
+      }
+    } catch {
+      setStatus('error');
+      setResponseMessage('Something went wrong. Please try again.');
     }
   };
 
@@ -51,20 +112,20 @@ export const Mailchimp: React.FC<React.ComponentProps<typeof Column>> = ({ ...fl
 
   return (
     <Column
-      overflow="hidden"
+      overflow='hidden'
       fillWidth
-      padding="xl"
-      radius="l"
-      marginBottom="m"
-      horizontal="center"
-      align="center"
-      background="surface"
-      border="neutral-alpha-weak"
+      padding='xl'
+      radius='l'
+      marginBottom='m'
+      horizontal='center'
+      align='center'
+      background='surface'
+      border='neutral-alpha-weak'
       {...flex}
     >
       <Background
-        top="0"
-        position="absolute"
+        top='0'
+        position='absolute'
         mask={{
           x: mailchimp.effects.mask.x,
           y: mailchimp.effects.mask.y,
@@ -104,81 +165,89 @@ export const Mailchimp: React.FC<React.ComponentProps<typeof Column>> = ({ ...fl
           color: mailchimp.effects.lines.color,
         }}
       />
-      <Column maxWidth="xs" horizontal="center">
-        <Heading marginBottom="s" variant="display-strong-xs">
+      <Column maxWidth='xs' horizontal='center'>
+        <Heading marginBottom='s' variant='display-strong-xs'>
           {newsletter.title}
         </Heading>
-        <Text wrap="balance" marginBottom="l" variant="body-default-l" onBackground="neutral-weak">
+        <Text
+          wrap='balance'
+          marginBottom='l'
+          variant='body-default-l'
+          onBackground='neutral-weak'
+        >
           {newsletter.description}
         </Text>
       </Column>
-      <form
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-        }}
-        action={mailchimp.action}
-        method="post"
-        id="mc-embedded-subscribe-form"
-        name="mc-embedded-subscribe-form"
-      >
-        <Row
-          id="mc_embed_signup_scroll"
+
+      {status === 'success' ? (
+        <Column
           fillWidth
           maxWidth={24}
-          s={{ direction: "column" }}
-          gap="8"
+          padding='l'
+          horizontal='center'
+          align='center'
         >
-          <Input
-            formNoValidate
-            id="mce-EMAIL"
-            name="EMAIL"
-            type="email"
-            placeholder="Email"
-            required
-            onChange={(e) => {
-              if (error) {
-                handleChange(e);
-              } else {
-                debouncedHandleChange(e);
-              }
-            }}
-            onBlur={handleBlur}
-            errorMessage={error}
-          />
-          <div style={{ display: "none" }}>
-            <input
-              type="checkbox"
-              readOnly
-              name="group[3492][1]"
-              id="mce-group[3492]-3492-0"
-              value=""
-              checked
+          <Text variant='body-strong-m' onBackground='brand-strong'>
+            {responseMessage}
+          </Text>
+          <Button
+            style={{ marginTop: '1rem' }}
+            size='m'
+            variant='secondary'
+            onClick={() => setStatus('idle')}
+          >
+            Send another message
+          </Button>
+        </Column>
+      ) : (
+        <form
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+          onSubmit={handleSubmit}
+        >
+          <Column fillWidth maxWidth={24} gap='16'>
+            <Input
+              id='contact-email'
+              name='email'
+              type='email'
+              placeholder='Your email'
+              required
+              value={email}
+              onChange={handleEmailChange}
+              errorMessage={emailError}
             />
-          </div>
-          <div id="mce-responses" className="clearfalse">
-            <div className="response" id="mce-error-response" style={{ display: "none" }}></div>
-            <div className="response" id="mce-success-response" style={{ display: "none" }}></div>
-          </div>
-          <div aria-hidden="true" style={{ position: "absolute", left: "-5000px" }}>
-            <input
-              type="text"
-              readOnly
-              name="b_c1a5a210340eb6c7bff33b2ba_0462d244aa"
-              tabIndex={-1}
-              value=""
+            <Textarea
+              id='contact-message'
+              name='message'
+              placeholder='Your message'
+              required
+              value={message}
+              onChange={handleMessageChange}
+              errorMessage={messageError}
+              rows={4}
             />
-          </div>
-          <div className="clear">
-            <Row height="48" vertical="center">
-              <Button id="mc-embedded-subscribe" value="Subscribe" size="m" fillWidth>
-                Subscribe
-              </Button>
-            </Row>
-          </div>
-        </Row>
-      </form>
+            {status === 'error' && (
+              <Text variant='body-default-s' onBackground='danger-strong'>
+                {responseMessage}
+              </Text>
+            )}
+            <Button
+              type='submit'
+              size='m'
+              fillWidth
+              disabled={status === 'submitting'}
+            >
+              {status === 'submitting' ? 'Sending...' : 'Send Message'}
+            </Button>
+          </Column>
+        </form>
+      )}
     </Column>
   );
 };
+
+// Keep the old export name for backward compatibility
+export const Mailchimp = ContactForm;

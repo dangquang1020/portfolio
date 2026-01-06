@@ -1,20 +1,20 @@
-import "@once-ui-system/core/css/styles.css";
-import "@once-ui-system/core/css/tokens.css";
-import "@/resources/custom.css";
+import '@once-ui-system/core/css/styles.css';
+import '@once-ui-system/core/css/tokens.css';
+import '@/resources/custom.css';
 
-import classNames from "classnames";
+import classNames from 'classnames';
 
 import {
   Background,
   Column,
   Flex,
   Meta,
-  opacity,
+  type opacity,
   RevealFx,
-  SpacingToken,
-} from "@once-ui-system/core";
-import { Footer, Header, RouteGuard, Providers } from "@/components";
-import { baseURL, effects, fonts, style, dataStyle, home } from "@/resources";
+  type SpacingToken,
+} from '@once-ui-system/core';
+import { Footer, Header, RouteGuard, Providers } from '@/components';
+import { baseURL, effects, fonts, style, dataStyle, home } from '@/resources';
 
 export async function generateMetadata() {
   return Meta.generate({
@@ -34,19 +34,20 @@ export default async function RootLayout({
   return (
     <Flex
       suppressHydrationWarning
-      as="html"
-      lang="en"
+      as='html'
+      lang='en'
       fillWidth
       className={classNames(
         fonts.heading.variable,
         fonts.body.variable,
         fonts.label.variable,
-        fonts.code.variable,
+        fonts.code.variable
       )}
     >
       <head>
         <script
-          id="theme-init"
+          id='theme-init'
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -60,12 +61,12 @@ export default async function RootLayout({
                     accent: style.accent,
                     neutral: style.neutral,
                     solid: style.solid,
-                    "solid-style": style.solidStyle,
+                    'solid-style': style.solidStyle,
                     border: style.border,
                     surface: style.surface,
                     transition: style.transition,
                     scaling: style.scaling,
-                    "viz-style": dataStyle.variant,
+                    'viz-style': dataStyle.variant,
                   })};
                   
                   // Apply default values
@@ -105,15 +106,15 @@ export default async function RootLayout({
       </head>
       <Providers>
         <Column
-          as="body"
-          background="page"
+          as='body'
+          background='page'
           fillWidth
-          style={{ minHeight: "100vh" }}
-          margin="0"
-          padding="0"
-          horizontal="center"
+          style={{ minHeight: '100vh' }}
+          margin='0'
+          padding='0'
+          horizontal='center'
         >
-          <RevealFx fill position="absolute">
+          <RevealFx fill position='absolute'>
             <Background
               mask={{
                 x: effects.mask.x,
@@ -155,10 +156,10 @@ export default async function RootLayout({
               }}
             />
           </RevealFx>
-          <Flex fillWidth minHeight="16" s={{ hide: true }} />
+          <Flex fillWidth minHeight='16' s={{ hide: true }} />
           <Header />
-          <Flex zIndex={0} fillWidth padding="l" horizontal="center" flex={1}>
-            <Flex horizontal="center" fillWidth minHeight="0">
+          <Flex zIndex={0} fillWidth padding='l' horizontal='center' flex={1}>
+            <Flex horizontal='center' fillWidth minHeight='0'>
               <RouteGuard>{children}</RouteGuard>
             </Flex>
           </Flex>

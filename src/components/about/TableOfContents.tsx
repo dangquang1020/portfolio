@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Column, Flex, Text } from "@once-ui-system/core";
-import styles from "./about.module.scss";
+import type React from 'react';
+import { Column, Flex, Text } from '@once-ui-system/core';
+import styles from './about.module.scss';
 
 interface TableOfContentsProps {
   structure: {
@@ -18,7 +18,10 @@ interface TableOfContentsProps {
   };
 }
 
-const TableOfContents: React.FC<TableOfContentsProps> = ({ structure, about }) => {
+const TableOfContents: React.FC<TableOfContentsProps> = ({
+  structure,
+  about,
+}) => {
   const scrollTo = (id: string, offset: number) => {
     const element = document.getElementById(id);
     if (element) {
@@ -27,7 +30,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ structure, about }) =
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
   };
@@ -36,50 +39,49 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ structure, about }) =
 
   return (
     <Column
-      left="0"
+      left='0'
       style={{
-        top: "50%",
-        transform: "translateY(-50%)",
-        whiteSpace: "nowrap",
+        top: '50%',
+        transform: 'translateY(-50%)',
+        whiteSpace: 'nowrap',
       }}
-      position="fixed"
-      paddingLeft="24"
-      gap="32"
+      position='fixed'
+      paddingLeft='24'
+      gap='32'
       m={{ hide: true }}
     >
       {structure
         .filter((section) => section.display)
         .map((section, sectionIndex) => (
-          <Column key={sectionIndex} gap="12">
+          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+          <Column key={sectionIndex} gap='12'>
             <Flex
-              cursor="interactive"
+              cursor='interactive'
               className={styles.hover}
-              gap="8"
-              vertical="center"
+              gap='8'
+              vertical='center'
               onClick={() => scrollTo(section.title, 80)}
             >
-              <Flex height="1" minWidth="16" background="neutral-strong"></Flex>
+              <Flex height='1' minWidth='16' background='neutral-strong' />
               <Text>{section.title}</Text>
             </Flex>
-            {about.tableOfContent.subItems && (
-              <>
-                {section.items.map((item, itemIndex) => (
-                  <Flex
-                    l={{ hide: true }}
-                    key={itemIndex}
-                    style={{ cursor: "pointer" }}
-                    className={styles.hover}
-                    gap="12"
-                    paddingLeft="24"
-                    vertical="center"
-                    onClick={() => scrollTo(item, 80)}
-                  >
-                    <Flex height="1" minWidth="8" background="neutral-strong"></Flex>
-                    <Text>{item}</Text>
-                  </Flex>
-                ))}
-              </>
-            )}
+            {about.tableOfContent.subItems &&
+              section.items.map((item, itemIndex) => (
+                <Flex
+                  l={{ hide: true }}
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                  key={itemIndex}
+                  style={{ cursor: 'pointer' }}
+                  className={styles.hover}
+                  gap='12'
+                  paddingLeft='24'
+                  vertical='center'
+                  onClick={() => scrollTo(item, 80)}
+                >
+                  <Flex height='1' minWidth='8' background='neutral-strong' />
+                  <Text>{item}</Text>
+                </Flex>
+              ))}
           </Column>
         ))}
     </Column>

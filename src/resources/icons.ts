@@ -1,4 +1,4 @@
-import { IconType } from "react-icons";
+import type { IconType } from 'react-icons';
 
 import {
   HiArrowUpRight,
@@ -12,7 +12,7 @@ import {
   HiOutlineDocument,
   HiOutlineGlobeAsiaAustralia,
   HiOutlineRocketLaunch,
-} from "react-icons/hi2";
+} from 'react-icons/hi2';
 
 import {
   PiHouseDuotone,
@@ -20,16 +20,24 @@ import {
   PiGridFourDuotone,
   PiBookBookmarkDuotone,
   PiImageDuotone,
-} from "react-icons/pi";
+} from 'react-icons/pi';
+
+import { SiJavascript, SiNextdotjs, SiFigma, SiSupabase } from 'react-icons/si';
 
 import {
-  SiJavascript,
-  SiNextdotjs,
-  SiFigma,
-  SiSupabase,
-} from "react-icons/si";
-
-import { FaDiscord, FaGithub, FaLinkedin, FaX, FaThreads, FaInstagram, FaXTwitter, FaFacebook, FaPinterest, FaWhatsapp, FaReddit, FaTelegram, } from "react-icons/fa6";
+  FaDiscord,
+  FaGithub,
+  FaLinkedin,
+  FaX,
+  FaThreads,
+  FaInstagram,
+  FaXTwitter,
+  FaFacebook,
+  FaPinterest,
+  FaWhatsapp,
+  FaReddit,
+  FaTelegram,
+} from 'react-icons/fa6';
 
 export const iconLibrary: Record<string, IconType> = {
   arrowUpRight: HiArrowUpRight,
